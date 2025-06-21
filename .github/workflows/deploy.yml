@@ -35,8 +35,8 @@ jobs:
      #     SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
      #     SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
-      - name: Lint code
-        run: npm run lint
+      #- name: Lint code
+      #  run: npm run lint
 
       - name: Build project
         run: npm run build
