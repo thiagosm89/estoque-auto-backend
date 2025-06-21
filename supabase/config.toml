@@ -237,15 +237,15 @@ api_key = ""
 api_secret = ""
 
 # Configure one of the supported MFA factors: `totp`, `webauthn`.
-[auth.mfa.totp]
-enabled = false
-# The issuer name to be used in the TOTP QR code.
-issuer = ""
+# [auth.mfa.totp]
+# enabled = false
+# # The issuer name to be used in the TOTP QR code.
+# issuer = ""
 
-[auth.mfa.webauthn]
-enabled = false
-# The relying party name to be used in the WebAuthn flow.
-rp_name = ""
+# [auth.mfa.webauthn]
+# enabled = false
+# # The relying party name to be used in the WebAuthn flow.
+# rp_name = ""
 
 # Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin`, `notion`, `slack`,
@@ -260,7 +260,7 @@ rp_name = ""
 # or any other third-party OIDC providers.
 # url = ""
 
-[edge_functions]
+[functions]
 # Configure one of the supported import map providers: `import_map`, `bundle`.
 import_map_provider = "import_map"
 # The import map file to use when the import map provider is set to `import_map`.
@@ -268,17 +268,17 @@ import_map_path = "./import_map.json"
 # The bundle file to use when the import map provider is set to `bundle`.
 # bundle_path = "./edge-functions-bundle.js"
 
-[analytics]
-enabled = false
-port = 54327
-vector_port = 54328
-# Configure one of the supported backends: `postgres`, `bigquery`.
-backend = "postgres"
-# Configure one of the supported sample rates: `0.1`, `0.01`, `0.001`.
-sample_rate = 0.1
-# Configure one of the supported log levels: `debug`, `info`, `warn`, `error`.
-log_level = "info"
+# [analytics]
+# enabled = false
+# port = 54327
+# vector_port = 54328
+# # Configure one of the supported backends: `postgres`, `bigquery`.
+# backend = "postgres"
+# # Configure one of the supported sample rates: `0.1`, `0.01`, `0.001`.
+# sample_rate = 0.1
+# # Configure one of the supported log levels: `debug`, `info`, `warn`, `error`.
+# log_level = "info"
 
-[experimental]
-# Enable the new auth UI
-enable_auth_ui = false 
+# [experimental]
+# # Enable the new auth UI
+# enable_auth_ui = false 
