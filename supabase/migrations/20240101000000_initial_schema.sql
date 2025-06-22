@@ -2,7 +2,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Create custom types required for user profiles
-CREATE TYPE public.user_role AS ENUM ('admin', 'manager', 'employee');
+CREATE TYPE public.user_role AS ENUM ('admin', 'company', 'employee');
 
 -- Create companies table
 CREATE TABLE public.companies (
@@ -12,7 +12,10 @@ CREATE TABLE public.companies (
     cnpj VARCHAR(18) UNIQUE NOT NULL,
     email VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    contact_phone VARCHAR(20),
+    legal_representative_email VARCHAR(255),
+    onboarding_completed BOOLEAN DEFAULT FALSE
 );
 
 -- Create user_profiles table to extend auth.users
