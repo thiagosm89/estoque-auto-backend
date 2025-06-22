@@ -1,25 +1,25 @@
 -- Additional RLS policies for complete CRUD operations
 
 -- Vehicle Categories policies
-CREATE POLICY "Users can insert categories for their company" ON vehicle_categories FOR INSERT WITH CHECK (
-    company_id IN (SELECT company_id FROM user_profiles WHERE id = auth.uid())
+CREATE POLICY "Users can insert categories for their company" ON public.vehicle_categories FOR INSERT WITH CHECK (
+    company_id IN (SELECT company_id FROM public.user_profiles WHERE id = auth.uid())
 );
 
-CREATE POLICY "Users can update their company categories" ON vehicle_categories FOR UPDATE USING (
-    company_id IN (SELECT company_id FROM user_profiles WHERE id = auth.uid())
+CREATE POLICY "Users can update their company categories" ON public.vehicle_categories FOR UPDATE USING (
+    company_id IN (SELECT company_id FROM public.user_profiles WHERE id = auth.uid())
 );
 
-CREATE POLICY "Users can delete their company categories" ON vehicle_categories FOR DELETE USING (
-    company_id IN (SELECT company_id FROM user_profiles WHERE id = auth.uid())
+CREATE POLICY "Users can delete their company categories" ON public.vehicle_categories FOR DELETE USING (
+    company_id IN (SELECT company_id FROM public.user_profiles WHERE id = auth.uid())
 );
 
 -- Suppliers policies
-CREATE POLICY "Users can insert suppliers for their company" ON suppliers FOR INSERT WITH CHECK (
-    company_id IN (SELECT company_id FROM user_profiles WHERE id = auth.uid())
+CREATE POLICY "Users can insert suppliers for their company" ON public.suppliers FOR INSERT WITH CHECK (
+    company_id IN (SELECT company_id FROM public.user_profiles WHERE id = auth.uid())
 );
 
-CREATE POLICY "Users can update their company suppliers" ON suppliers FOR UPDATE USING (
-    company_id IN (SELECT company_id FROM user_profiles WHERE id = auth.uid())
+CREATE POLICY "Users can update their company suppliers" ON public.suppliers FOR UPDATE USING (
+    company_id IN (SELECT company_id FROM public.user_profiles WHERE id = auth.uid())
 );
 
 CREATE POLICY "Users can delete their company suppliers" ON suppliers FOR DELETE USING (
