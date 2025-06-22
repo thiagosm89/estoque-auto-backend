@@ -7,6 +7,7 @@ CREATE TYPE public.user_role AS ENUM ('admin', 'manager', 'employee');
 -- Create companies table
 CREATE TABLE public.companies (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    owner_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     cnpj VARCHAR(18) UNIQUE NOT NULL,
     email VARCHAR(255),
@@ -73,9 +74,10 @@ DECLARE
     user_first_name TEXT;
     user_last_name TEXT;
 BEGIN
-    -- 1. Insert a new company based on metadata and get its ID
-    INSERT INTO public.companies (name, cnpj, email)
+    -- 1. Insert a new company based on metadata, linking it to the owner (the new user)
+    INSERT INTO public.companies (owner_id, name, cnpj, email)
     VALUES (
+        NEW.id, -- Set the owner_id to the new user's id
         NEW.raw_user_meta_data->>'company_name',
         NEW.raw_user_meta_data->>'cnpj',
         NEW.email
