@@ -10,7 +10,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
                 headers: {
                     'Access-Control-Allow-Origin': allowedOrigin,
                     'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-                    'Access-Control-Allow-Headers': 'Content-Type, apikey',
+                    'Access-Control-Allow-Headers': 'Content-Type, apikey, authorization, Authorization, x-client-info',
                     'Access-Control-Max-Age': '86400',
                 },
             });
