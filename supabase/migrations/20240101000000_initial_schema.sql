@@ -80,29 +80,28 @@ DECLARE
     user_first_name TEXT;
     user_last_name TEXT;
 BEGIN
-    -- 1. Insert a new company based on metadata, linking it to the owner (the new user)
-    INSERT INTO public.companies (owner_id, fantasy_name, corporate_name, cnpj, email)
-    VALUES (
-        NEW.id, -- Set the owner_id to the new user's id
-        NEW.raw_user_meta_data->>'fantasy_name',
-        NEW.raw_user_meta_data->>'corporate_name',
-        NEW.raw_user_meta_data->>'cnpj',
-        NEW.email
-    ) RETURNING id INTO new_company_id;
+    -- Só insere empresa se fantasy_name não for nulo
+    IF NEW.raw_user_meta_data->>'fantasy_name' IS NOT NULL THEN
+        INSERT INTO public.companies (owner_id, fantasy_name, corporate_name, cnpj, email)
+        VALUES (
+            NEW.id,
+            NEW.raw_user_meta_data->>'fantasy_name',
+            NEW.raw_user_meta_data->>'corporate_name',
+            NEW.raw_user_meta_data->>'cnpj',
+            NEW.email
+        ) RETURNING id INTO new_company_id;
 
-    -- Set default names if not provided in metadata
-    user_first_name := COALESCE(NEW.raw_user_meta_data->>'first_name', 'Admin');
-    user_last_name := COALESCE(NEW.raw_user_meta_data->>'last_name', 'Principal');
-
-    -- 2. Insert into user_profiles using the new user's id and the new company_id
-    INSERT INTO public.user_profiles (id, company_id, first_name, last_name, role)
-    VALUES (
-        NEW.id,
-        new_company_id,
-        user_first_name,
-        user_last_name,
-        'admin' -- The first user is always an admin
-    );
+        user_first_name := COALESCE(NEW.raw_user_meta_data->>'first_name', 'Admin');
+        user_last_name := COALESCE(NEW.raw_user_meta_data->>'last_name', 'Principal');
+        INSERT INTO public.user_profiles (id, company_id, first_name, last_name, role)
+        VALUES (
+            NEW.id,
+            new_company_id,
+            user_first_name,
+            user_last_name,
+            'admin'
+        );
+    END IF;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
