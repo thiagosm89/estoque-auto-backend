@@ -10,6 +10,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
                     'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
                     'Access-Control-Allow-Headers': 'Content-Type, apikey',
                     'Access-Control-Max-Age': '86400',
+                    'Access-Control-Allow-Credentials': 'true',
                 },
             });
         }
@@ -23,6 +24,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
 
                 const headers = new Headers(res.headers);
                 headers.set('Access-Control-Allow-Origin', '*');
+                headers.set('Access-Control-Allow-Credentials', 'true');
 
                 return new Response(res.body, {
                     status: res.status,
@@ -36,6 +38,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
             const res = await execute(req, ctx);
             const headers = new Headers(res.headers);
             headers.set('Access-Control-Allow-Origin', '*');
+            headers.set('Access-Control-Allow-Credentials', 'true');
             return new Response(res.body, {
                 status: res.status,
                 statusText: res.statusText,
