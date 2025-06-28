@@ -84,8 +84,8 @@ BEGIN
     INSERT INTO public.companies (owner_id, fantasy_name, corporate_name, cnpj, email)
     VALUES (
         NEW.id, -- Set the owner_id to the new user's id
-        NEW.raw_user_meta_data->>'company_name',
-        NEW.raw_user_meta_data->>'company_name',
+        NEW.raw_user_meta_data->>'fantasy_name',
+        NEW.raw_user_meta_data->>'corporate_name',
         NEW.raw_user_meta_data->>'cnpj',
         NEW.email
     ) RETURNING id INTO new_company_id;

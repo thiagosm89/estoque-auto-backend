@@ -33,26 +33,28 @@ export function execute() {
             const { data: user, error: userError } = await supabase.auth.admin.createUser({
                 email: body.email,
                 password: body.password,
-                email_confirm: false
+                email_confirm: false,
+                user_metadata: {
+                    fantasy_name: body.fantasyName,
+                    corporate_name: body.corporateName,
+                    cnpj: body.cnpj
+                }
             });
             if (userError || !user || !user.user) {
+                console.error(userError);
+
                 return new ErrorResponseBuilder()
                     .add(null, ErrorMap.AuthCreateError.description, ErrorMap.AuthCreateError.code)
                     .buildResponse();
             }
 
-            // 4. Criar empresa vinculada ao user_id
+            // 4. Buscar a empresa criada pela trigger usando o owner_id
             const { data: company, error: companyError } = await supabase
                 .from("companies")
-                .insert({
-                    cnpj: body.cnpj,
-                    fantasy_name: body.fantasyName,
-                    corporate_name: body.corporateName,
-                    owner_user_id: user.user.id
-                })
-                .select()
+                .select("id")
+                .eq("owner_id", user.user.id)
                 .single();
-            if (companyError) {
+            if (companyError || !company) {
                 return new ErrorResponseBuilder()
                     .add(null, ErrorMap.CompanyCreateError.description, ErrorMap.CompanyCreateError.code)
                     .buildResponse();

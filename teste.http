@@ -14,10 +14,11 @@ apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR
 Content-Type: application/json
 
 {
-  "companyName": "Minha Empresa Teste",
+  "fantasyName": "tsjpa tecnologia",
+  "corporateName": "thiago pereira mello",
   "cnpj": "48259051000169",
-  "email": "teste@empresa.com",
-  "password": "senhaSegura123"
+  "email": "thiagopereiramello@gmail.com",
+  "password": "teste012"
 }
 
 ###
