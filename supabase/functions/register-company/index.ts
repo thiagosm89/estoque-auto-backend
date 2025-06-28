@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import ErrorResponseBuilder from "../_shared/validation/ErrorResponseBuilder.ts";
 import { fetchCnpjData } from "../_shared/outbound/httpclient/cnpjService.ts";
 import { getSupabaseClient } from "../_shared/helper/supabaseClient.ts";
+import {EnvHelper} from "../_shared/helper/envHelper.ts";
+import {handlerRequest} from "../_shared/handler/httpHandler.ts";
 
 // Interface para o body do cadastro
 export interface RegisterCompanyBody {
@@ -11,51 +13,61 @@ export interface RegisterCompanyBody {
     password: string;
 }
 
-serve(async (req) => {
-    const supabase = getSupabaseClient();
+if(!EnvHelper.isLocal()) {
+    serve(execute());
+}
 
-    try {
-        const body: RegisterCompanyBody = await req.json();
+export function execute() {
+    return handlerRequest(async (req) => {
+        const supabase = getSupabaseClient();
 
-        // Validação extraída para função separada
-        const validationResult = await validateRegisterCompany(body, supabase);
-        if (validationResult) return validationResult.buildResponse();
+        try {
+            const body: RegisterCompanyBody = await req.json();
 
-        // 3. Criar usuário no Auth
-        const { data: user, error: userError } = await supabase.auth.admin.createUser({
-            email: body.email,
-            password: body.password,
-            email_confirm: false
-        });
-        if (userError || !user || !user.user) {
+            // Validação extraída para função separada
+            const validationResult = await validateRegisterCompany(body, supabase);
+            if (validationResult) return validationResult.buildResponse();
+
+            // 3. Criar usuário no Auth
+            const {data: user, error: userError} = await supabase.auth.admin.createUser({
+                email: body.email,
+                password: body.password,
+                email_confirm: false
+            });
+            if (userError || !user || !user.user) {
+                return new ErrorResponseBuilder()
+                    .add(null, ErrorMap.AuthCreateError.description, ErrorMap.AuthCreateError.code)
+                    .buildResponse();
+            }
+
+            // 4. Criar empresa vinculada ao user_id
+            const {data: company, error: companyError} = await supabase
+                .from("companies")
+                .insert({
+                    cnpj: body.cnpj,
+                    name: body.companyName,
+                    owner_user_id: user.user.id
+                })
+                .select()
+                .single();
+            if (companyError) {
+                return new ErrorResponseBuilder()
+                    .add(null, ErrorMap.CompanyCreateError.description, ErrorMap.CompanyCreateError.code)
+                    .buildResponse();
+            }
+
+            return new Response(JSON.stringify({
+                success: true,
+                user_id: user.user.id,
+                company_id: company.id
+            }), {status: 200});
+        } catch (err) {
             return new ErrorResponseBuilder()
-                .add(null, ErrorMap.AuthCreateError.description, ErrorMap.AuthCreateError.code)
-                .buildResponse();
+                .add(null, ErrorMap.UnexpectedError.description + err, ErrorMap.UnexpectedError.code)
+                .buildResponse(500);
         }
-
-        // 4. Criar empresa vinculada ao user_id
-        const { data: company, error: companyError } = await supabase
-            .from("companies")
-            .insert({
-                cnpj: body.cnpj,
-                name: body.companyName,
-                owner_user_id: user.user.id
-            })
-            .select()
-            .single();
-        if (companyError) {
-            return new ErrorResponseBuilder()
-                .add(null, ErrorMap.CompanyCreateError.description, ErrorMap.CompanyCreateError.code)
-                .buildResponse();
-        }
-
-        return new Response(JSON.stringify({ success: true, user_id: user.user.id, company_id: company.id }), { status: 200 });
-    } catch (err) {
-        return new ErrorResponseBuilder()
-            .add(null, ErrorMap.UnexpectedError.description + err, ErrorMap.UnexpectedError.code)
-            .buildResponse(500);
-    }
-});
+    });
+}
 
 // Função de validação extraída
 async function validateRegisterCompany(
