@@ -33,6 +33,7 @@ export function execute() {
             const { data: user, error: userError } = await supabase.auth.admin.createUser({
                 email: body.email,
                 password: body.password,
+                email_confirm: true,
                 user_metadata: {
                     fantasy_name: body.fantasyName,
                     corporate_name: body.corporateName,
