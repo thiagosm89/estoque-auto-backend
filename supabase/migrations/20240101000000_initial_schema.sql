@@ -8,7 +8,8 @@ CREATE TYPE public.user_role AS ENUM ('admin', 'company', 'employee');
 CREATE TABLE public.companies (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     owner_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
+    fantasy_name VARCHAR(255) NOT NULL,
+    corporate_name VARCHAR(255) NOT NULL,
     cnpj VARCHAR(18) UNIQUE NOT NULL,
     email VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -80,9 +81,10 @@ DECLARE
     user_last_name TEXT;
 BEGIN
     -- 1. Insert a new company based on metadata, linking it to the owner (the new user)
-    INSERT INTO public.companies (owner_id, name, cnpj, email)
+    INSERT INTO public.companies (owner_id, fantasy_name, corporate_name, cnpj, email)
     VALUES (
         NEW.id, -- Set the owner_id to the new user's id
+        NEW.raw_user_meta_data->>'company_name',
         NEW.raw_user_meta_data->>'company_name',
         NEW.raw_user_meta_data->>'cnpj',
         NEW.email

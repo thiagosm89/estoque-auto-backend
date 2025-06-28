@@ -9,7 +9,8 @@ export class CnpjResult {
     constructor(
         public readonly valid: boolean,
         public readonly active: boolean,
-        public readonly companyName: string | null,
+        public readonly fantasyName: string | null,
+        public readonly corporateName: string | null,
         public readonly cnaes: CnaeInfo[],
         public readonly errorType: 'NOT_FOUND' | 'NOT_ACTIVE' | 'NETWORK' | null
     ) { }
@@ -27,7 +28,8 @@ export async function fetchCnpjData(cnpj: string): Promise<CnpjResult> {
             return new CnpjResult(
                 false, // valid
                 false, // active
-                null,  // companyName
+                null,  // fantasyName
+                null,  // corporateName
                 [],    // cnaes
                 'NOT_FOUND' // errorType
             );
@@ -42,12 +44,15 @@ export async function fetchCnpjData(cnpj: string): Promise<CnpjResult> {
                 cnaes.push({ code: String(c.codigo), primary: false });
             }
         }
+        const fantasyName = data.nome_fantasia || null;
+        const corporateName = data.razao_social || null;
 
         if (data.descricao_situacao_cadastral !== "ATIVA") {
             return new CnpjResult(
                 true, // valid
                 false, // active
-                data.razao_social || null, // companyName
+                fantasyName,
+                corporateName,
                 cnaes,
                 'NOT_ACTIVE' // errorType
             );
@@ -55,7 +60,8 @@ export async function fetchCnpjData(cnpj: string): Promise<CnpjResult> {
         return new CnpjResult(
             true, // valid
             true, // active
-            data.razao_social || null, // companyName
+            fantasyName,
+            corporateName,
             cnaes,
             null // errorType
         );
@@ -63,7 +69,8 @@ export async function fetchCnpjData(cnpj: string): Promise<CnpjResult> {
         return new CnpjResult(
             false, // valid
             false, // active
-            null,  // companyName
+            null,  // fantasyName
+            null,  // corporateName
             [],    // cnaes
             'NETWORK' // errorType
         );

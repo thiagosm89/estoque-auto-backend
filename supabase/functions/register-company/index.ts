@@ -2,18 +2,19 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import ErrorResponseBuilder from "../_shared/validation/ErrorResponseBuilder.ts";
 import { fetchCnpjData } from "../_shared/outbound/httpclient/cnpjService.ts";
 import { getSupabaseClient } from "../_shared/helper/supabaseClient.ts";
-import {EnvHelper} from "../_shared/helper/envHelper.ts";
-import {handlerRequest} from "../_shared/handler/httpHandler.ts";
+import { EnvHelper } from "../_shared/helper/envHelper.ts";
+import { handlerRequest } from "../_shared/handler/httpHandler.ts";
 
 // Interface para o body do cadastro
 export interface RegisterCompanyBody {
-    companyName: string;
+    fantasyName: string;
+    corporateName: string;
     cnpj: string;
     email: string;
     password: string;
 }
 
-if(!EnvHelper.isLocal()) {
+if (!EnvHelper.isLocal()) {
     serve(execute());
 }
 
@@ -29,7 +30,7 @@ export function execute() {
             if (validationResult) return validationResult.buildResponse();
 
             // 3. Criar usuário no Auth
-            const {data: user, error: userError} = await supabase.auth.admin.createUser({
+            const { data: user, error: userError } = await supabase.auth.admin.createUser({
                 email: body.email,
                 password: body.password,
                 email_confirm: false
@@ -41,11 +42,12 @@ export function execute() {
             }
 
             // 4. Criar empresa vinculada ao user_id
-            const {data: company, error: companyError} = await supabase
+            const { data: company, error: companyError } = await supabase
                 .from("companies")
                 .insert({
                     cnpj: body.cnpj,
-                    name: body.companyName,
+                    fantasy_name: body.fantasyName,
+                    corporate_name: body.corporateName,
                     owner_user_id: user.user.id
                 })
                 .select()
@@ -60,7 +62,7 @@ export function execute() {
                 success: true,
                 user_id: user.user.id,
                 company_id: company.id
-            }), {status: 200});
+            }), { status: 200 });
         } catch (err) {
             return new ErrorResponseBuilder()
                 .add(null, ErrorMap.UnexpectedError.description + err, ErrorMap.UnexpectedError.code)
@@ -74,9 +76,10 @@ async function validateRegisterCompany(
     body: RegisterCompanyBody,
     supabase
 ) {
-    const { companyName, cnpj, email, password } = body;
+    const { fantasyName, corporateName, cnpj, email, password } = body;
     const errorBuilder = new ErrorResponseBuilder();
-    if (!companyName) errorBuilder.add(FormFields.CompanyName, ErrorMap.CompanyNameRequired.description, ErrorMap.CompanyNameRequired.code);
+    if (!fantasyName) errorBuilder.add(FormFields.FantasyName, ErrorMap.FantasyNameRequired.description, ErrorMap.FantasyNameRequired.code);
+    if (!corporateName) errorBuilder.add(FormFields.CorporateName, ErrorMap.CorporateNameRequired.description, ErrorMap.CorporateNameRequired.code);
     if (!cnpj) errorBuilder.add(FormFields.Cnpj, ErrorMap.CnpjRequired.description, ErrorMap.CnpjRequired.code);
     if (!email) errorBuilder.add(FormFields.Email, ErrorMap.EmailRequired.description, ErrorMap.EmailRequired.code);
     if (!password) errorBuilder.add(FormFields.Password, ErrorMap.PasswordRequired.description, ErrorMap.PasswordRequired.code);
@@ -98,12 +101,18 @@ async function validateRegisterCompany(
         return errorBuilder
             .add(FormFields.Cnpj, ErrorMap.CnpjNotActive.description, ErrorMap.CnpjNotActive.code);
     }
-    // Conferir se o nome da empresa bate
-    const nomeReceita = (cnpjResult.companyName || '').trim().toLowerCase();
-    const nomeInformado = body.companyName.trim().toLowerCase();
-    if (nomeReceita !== nomeInformado) {
+    // Conferir se a razão social e nome fantasia batem
+    const razaoReceita = (cnpjResult.corporateName || '').trim().toLowerCase();
+    const razaoInformada = corporateName.trim().toLowerCase();
+    if (razaoReceita !== razaoInformada) {
         return errorBuilder
-            .add(FormFields.CompanyName, ErrorMap.CompanyNameMismatch.description, ErrorMap.CompanyNameMismatch.code);
+            .add(FormFields.CorporateName, ErrorMap.CorporateNameMismatch.description, ErrorMap.CorporateNameMismatch.code);
+    }
+    const fantasiaReceita = (cnpjResult.fantasyName || '').trim().toLowerCase();
+    const fantasiaInformada = fantasyName.trim().toLowerCase();
+    if (fantasiaReceita !== fantasiaInformada) {
+        return errorBuilder
+            .add(FormFields.FantasyName, ErrorMap.FantasyNameMismatch.description, ErrorMap.FantasyNameMismatch.code);
     }
 
     // 2. Verificar se o e-mail já existe
@@ -122,7 +131,8 @@ async function validateRegisterCompany(
 
 // Enum dos campos do formulário específico desta edge function
 export enum FormFields {
-    CompanyName = "companyName",
+    FantasyName = "fantasyName",
+    CorporateName = "corporateName",
     Cnpj = "cnpj",
     Email = "email",
     Password = "password"
@@ -130,13 +140,15 @@ export enum FormFields {
 
 // Enum único para códigos e descrições de erro
 export const ErrorMap = {
-    CompanyNameRequired: { code: "COMPANY_NAME_REQUIRED", description: "Nome da empresa é obrigatório." },
+    FantasyNameRequired: { code: "FANTASY_NAME_REQUIRED", description: "Nome fantasia é obrigatório." },
+    CorporateNameRequired: { code: "CORPORATE_NAME_REQUIRED", description: "Razão social é obrigatória." },
     CnpjRequired: { code: "CNPJ_REQUIRED", description: "CNPJ é obrigatório." },
     EmailRequired: { code: "EMAIL_REQUIRED", description: "E-mail é obrigatório." },
     PasswordRequired: { code: "PASSWORD_REQUIRED", description: "Senha é obrigatória." },
     CnpjNotFound: { code: "CNPJ_NOT_FOUND", description: "CNPJ inválido ou não encontrado na Receita Federal." },
     CnpjNotActive: { code: "CNPJ_NOT_ACTIVE", description: "CNPJ não está ativo." },
-    CompanyNameMismatch: { code: "COMPANY_NAME_MISMATCH", description: "O nome da empresa não confere com o registrado na Receita Federal." },
+    CorporateNameMismatch: { code: "CORPORATE_NAME_MISMATCH", description: "A razão social não confere com o registrado na Receita Federal." },
+    FantasyNameMismatch: { code: "FANTASY_NAME_MISMATCH", description: "O nome fantasia não confere com o registrado na Receita Federal." },
     EmailCheckError: { code: "EMAIL_CHECK_ERROR", description: "Erro ao verificar e-mail." },
     EmailAlreadyRegistered: { code: "EMAIL_ALREADY_REGISTERED", description: "E-mail já cadastrado." },
     AuthCreateError: { code: "AUTH_CREATE_ERROR", description: "Erro ao criar usuário." },
