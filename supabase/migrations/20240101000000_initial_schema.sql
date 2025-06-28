@@ -146,12 +146,12 @@ CREATE TABLE public.company_terms (
     effective_from TIMESTAMP WITH TIME ZONE NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(hash),
-    CONSTRAINT only_one_active_term CHECK (
-        (is_active = TRUE AND hash = (SELECT hash FROM public.company_terms WHERE is_active = TRUE LIMIT 1))
-        OR is_active = FALSE
-    )
+    UNIQUE(hash)
 );
+
+-- Garante que só pode haver um termo ativo
+CREATE UNIQUE INDEX only_one_active_term_idx ON public.company_terms (is_active)
+WHERE is_active = TRUE;
 
 -- Tabela de aceite dos termos
 CREATE TABLE public.company_terms_acceptance (
