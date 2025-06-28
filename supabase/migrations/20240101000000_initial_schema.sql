@@ -99,7 +99,7 @@ BEGIN
             new_company_id,
             user_first_name,
             user_last_name,
-            'admin'
+            'company'
         );
     END IF;
     RETURN NEW;
