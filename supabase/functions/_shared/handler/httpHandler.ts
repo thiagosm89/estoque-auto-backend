@@ -12,7 +12,14 @@ export function handlerRequest(execute: (req: Request) => Promise<Response>) {
             });
         }
         if (req.method === 'POST') {
-            return await execute(req);
+            const res = await execute(req);
+            const headers = new Headers(res.headers);
+            headers.set('Access-Control-Allow-Origin', '*');
+            return new Response(res.body, {
+                status: res.status,
+                statusText: res.statusText,
+                headers,
+            });
         }
         return new Response('Method Not Allowed', { status: 405 });
     };
