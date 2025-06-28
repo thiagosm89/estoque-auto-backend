@@ -1,4 +1,4 @@
-import ErrorResponseBuilder from "../validation/ErrorResponseBuilder";
+import ErrorResponseBuilder from "../validation/ErrorResponseBuilder.ts";
 
 function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: boolean = false) {
     return async (req: Request, ctx): Promise<Response> => {
@@ -14,7 +14,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
             });
         }
 
-        if(withAuth) {
+        if (withAuth) {
             const user = ctx.user;
             if (!user) {
                 let res = new ErrorResponseBuilder()
@@ -42,7 +42,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
                 headers,
             });
         }
-        return new Response('Method Not Allowed', {status: 405});
+        return new Response('Method Not Allowed', { status: 405 });
     };
 }
 
