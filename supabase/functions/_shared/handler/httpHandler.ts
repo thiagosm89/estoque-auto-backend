@@ -2,11 +2,13 @@ import ErrorResponseBuilder from "../validation/ErrorResponseBuilder.ts";
 
 function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: boolean = false) {
     return async (req: Request, ctx): Promise<Response> => {
+        const allowedOrigin = req.headers.get('origin') || '*';
+
         if (req.method === 'OPTIONS') {
             return new Response(null, {
                 status: 204,
                 headers: {
-                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Origin': allowedOrigin,
                     'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
                     'Access-Control-Allow-Headers': 'Content-Type, apikey',
                     'Access-Control-Max-Age': '86400',
@@ -22,7 +24,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
                     .buildResponse(401);
 
                 const headers = new Headers(res.headers);
-                headers.set('Access-Control-Allow-Origin', '*');
+                headers.set('Access-Control-Allow-Origin', allowedOrigin);
 
                 return new Response(res.body, {
                     status: res.status,
@@ -35,7 +37,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
         if (req.method === 'POST') {
             const res = await execute(req, ctx);
             const headers = new Headers(res.headers);
-            headers.set('Access-Control-Allow-Origin', '*');
+            headers.set('Access-Control-Allow-Origin', allowedOrigin);
             return new Response(res.body, {
                 status: res.status,
                 statusText: res.statusText,
