@@ -1,5 +1,7 @@
-export function handlerRequest(execute: (req: Request) => Promise<Response>) {
-    return async (req: Request): Promise<Response> => {
+import ErrorResponseBuilder from "../validation/ErrorResponseBuilder";
+
+function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: boolean = false) {
+    return async (req: Request, ctx): Promise<Response> => {
         if (req.method === 'OPTIONS') {
             return new Response(null, {
                 status: 204,
@@ -11,8 +13,27 @@ export function handlerRequest(execute: (req: Request) => Promise<Response>) {
                 },
             });
         }
+
+        if(withAuth) {
+            const user = ctx.user;
+            if (!user) {
+                let res = new ErrorResponseBuilder()
+                    .add(null, "Usuário não autenticado.", "NOT_AUTHENTICATED")
+                    .buildResponse(401);
+
+                const headers = new Headers(res.headers);
+                headers.set('Access-Control-Allow-Origin', '*');
+
+                return new Response(res.body, {
+                    status: res.status,
+                    statusText: res.statusText,
+                    headers,
+                });
+            }
+        }
+
         if (req.method === 'POST') {
-            const res = await execute(req);
+            const res = await execute(req, ctx);
             const headers = new Headers(res.headers);
             headers.set('Access-Control-Allow-Origin', '*');
             return new Response(res.body, {
@@ -21,6 +42,14 @@ export function handlerRequest(execute: (req: Request) => Promise<Response>) {
                 headers,
             });
         }
-        return new Response('Method Not Allowed', { status: 405 });
+        return new Response('Method Not Allowed', {status: 405});
     };
-} 
+}
+
+export function handlerRequest(execute: (req: Request, ctx) => Promise<Response>) {
+    return handler(execute);
+}
+
+export function handlerRequestAuth(execute: (req: Request, ctx) => Promise<Response>) {
+    return handler(execute, true);
+}

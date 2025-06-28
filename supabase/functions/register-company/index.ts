@@ -15,7 +15,7 @@ export interface RegisterCompanyBody {
 }
 
 if (!EnvHelper.isLocal()) {
-    serve(execute());
+    serve((req, ctx) => execute()(req, ctx));
 }
 
 export function execute() {
