@@ -15,7 +15,9 @@ CREATE TABLE public.companies (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     contact_phone VARCHAR(20),
     legal_representative_email VARCHAR(255),
-    onboarding_completed BOOLEAN DEFAULT FALSE
+    onboarding_completed BOOLEAN DEFAULT FALSE,
+    legal_representative_name VARCHAR(255),
+    legal_representative_cpf VARCHAR(14)
 );
 
 -- Create user_profiles table to extend auth.users
@@ -24,7 +26,7 @@ CREATE TABLE public.user_profiles (
     company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
-    role public.user_role DEFAULT 'admin',
+    role public.user_role DEFAULT 'company',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -106,4 +108,76 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Trigger to execute the function when a new user signs up in auth.users
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
-    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user(); 
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Criar tabela de endereços da empresa
+CREATE TABLE public.company_addresses (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
+    address VARCHAR(255) NOT NULL,
+    number INTEGER NOT NULL,
+    complement VARCHAR(100),
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(2) NOT NULL,
+    cep VARCHAR(9) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Criar tabela de pagamentos/assinaturas da empresa
+CREATE TABLE public.company_payments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
+    plan_type VARCHAR(20) NOT NULL, -- 'anual' ou 'semestral'
+    plan_start_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    plan_status VARCHAR(20) NOT NULL DEFAULT 'trial', -- 'trial', 'ativo', 'cancelado', etc
+    card_holder_name VARCHAR(255) NOT NULL,
+    card_holder_cpf VARCHAR(14) NOT NULL,
+    card_last_digits VARCHAR(4),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de textos dos termos de contratação
+CREATE TABLE public.company_terms (
+    hash VARCHAR(64) PRIMARY KEY, -- hash/checksum do texto
+    version VARCHAR(20) NOT NULL,
+    text TEXT NOT NULL,
+    effective_from TIMESTAMP WITH TIME ZONE NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(hash),
+    CONSTRAINT only_one_active_term CHECK (
+        (is_active = TRUE AND hash = (SELECT hash FROM public.company_terms WHERE is_active = TRUE LIMIT 1))
+        OR is_active = FALSE
+    )
+);
+
+-- Tabela de aceite dos termos
+CREATE TABLE public.company_terms_acceptance (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
+    payment_id UUID REFERENCES public.company_payments(id) ON DELETE SET NULL,
+    term_hash VARCHAR(64) NOT NULL REFERENCES public.company_terms(hash),
+    accepted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    signature_name VARCHAR(255) NOT NULL,
+    signature_cpf VARCHAR(14) NOT NULL,
+    user_ip VARCHAR(45),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Trigger para impedir alteração da coluna hash em company_terms
+CREATE OR REPLACE FUNCTION prevent_company_terms_hash_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.hash <> OLD.hash THEN
+        RAISE EXCEPTION 'O campo hash não pode ser alterado após a inserção.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_prevent_company_terms_hash_update
+BEFORE UPDATE ON public.company_terms
+FOR EACH ROW
+EXECUTE FUNCTION prevent_company_terms_hash_update(); 
