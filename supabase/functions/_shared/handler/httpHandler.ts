@@ -1,4 +1,5 @@
 import ErrorResponseBuilder from "../validation/ErrorResponseBuilder.ts";
+import { getSupabaseClient } from "../../_shared/helper/supabaseClient.ts";
 
 function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: boolean = false) {
     return async (req: Request, ctx): Promise<Response> => {
@@ -17,20 +18,25 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
         }
 
         if (withAuth) {
-            const user = ctx.user;
-            if (!user) {
-                let res = new ErrorResponseBuilder()
+            const supabase = getSupabaseClient();
+            const { headers } = req;
+            const authHeader = headers.get("authorization");
+
+            if (!authHeader) {
+                return new ErrorResponseBuilder()
                     .add(null, "Usuário não autenticado.", "NOT_AUTHENTICATED")
                     .buildResponse(401);
+            }
 
-                const headers = new Headers(res.headers);
-                headers.set('Access-Control-Allow-Origin', allowedOrigin);
+            const token = authHeader.split(' ')[1];
 
-                return new Response(res.body, {
-                    status: res.status,
-                    statusText: res.statusText,
-                    headers,
-                });
+            const { data: user, error } = await supabase.auth.api.getUser(token);
+            console.log(user);
+
+            if (error) {
+                return new ErrorResponseBuilder()
+                    .add(null, "Usuário não autenticado.", "NOT_AUTHENTICATED")
+                    .buildResponse(401);
             }
         }
 
