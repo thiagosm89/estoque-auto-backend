@@ -3,7 +3,7 @@
     "lib": ["deno.ns", "dom"],
     "strict": true
   },
-  "importMap": "./supabase/import_map.json",
+  "importMap": "./import_map.json",
   "tasks": {
     "start": "deno run -A src/main.ts",
     "dev": "deno run -A --watch src/main.ts",
