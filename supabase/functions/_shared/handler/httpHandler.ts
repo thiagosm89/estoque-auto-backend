@@ -1,7 +1,7 @@
 import ErrorResponseBuilder from "../validation/ErrorResponseBuilder.ts";
 import { getSupabaseClient } from "../../_shared/helper/supabaseClient.ts";
 
-async function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: boolean = false) {
+function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: boolean = false) {
     return async (req: Request, ctx): Promise<Response> => {
         const allowedOrigin = req.headers.get('origin') || '*';
 
@@ -54,10 +54,10 @@ async function handler(execute: (req: Request, ctx) => Promise<Response>, withAu
     };
 }
 
-export async function handlerRequest(execute: (req: Request, ctx) => Promise<Response>) {
+export function handlerRequest(execute: (req: Request, ctx) => Promise<Response>) {
     return handler(execute);
 }
 
-export async function handlerRequestAuth(execute: (req: Request, ctx) => Promise<Response>) {
+export function handlerRequestAuth(execute: (req: Request, ctx) => Promise<Response>) {
     return handler(execute, true);
 }
