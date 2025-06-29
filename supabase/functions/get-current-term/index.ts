@@ -8,8 +8,8 @@ if (!EnvHelper.isLocal()) {
     Deno.serve(execute());
 }
 
-export function execute(): (req: Request, ctx) => Promise<Response> {
-    return handlerRequestAuth(async (_req, _ctx) => {
+export function execute() {
+    return handlerRequestAuth(async (_req) => {
         const supabase = getSupabaseClient();
         try {
             const { data: term, error } = await supabase

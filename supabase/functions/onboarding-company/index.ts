@@ -1,8 +1,9 @@
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import ErrorResponseBuilder from "../_shared/validation/ErrorResponseBuilder.ts";
 import { getSupabaseClient } from "../_shared/helper/supabaseClient.ts";
 import { EnvHelper } from "../_shared/helper/envHelper.ts";
 import { handlerRequest, handlerRequestAuth } from "../_shared/handler/httpHandler.ts";
+import { getUserFromRequest } from "../_shared/helper/authHelper.ts";
 
 // Interface para o body do onboarding
 export interface OnboardingBody {
@@ -26,15 +27,15 @@ export interface OnboardingBody {
 }
 
 if (!EnvHelper.isLocal()) {
-    serve((req, ctx) => execute()(req, ctx));
+    Deno.serve(execute());
 }
 
 export function execute() {
-    return handlerRequestAuth(async (req: Request, ctx) => {
+    return handlerRequestAuth(async (req: Request) => {
         const supabase = getSupabaseClient();
         try {
             const body: OnboardingBody = await req.json();
-            const user = ctx.user;
+            const { user } = await getUserFromRequest(req);
 
             // Validação básica dos campos obrigatórios
             const errorBuilder = new ErrorResponseBuilder();

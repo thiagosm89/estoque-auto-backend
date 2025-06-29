@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import ErrorResponseBuilder from "../_shared/validation/ErrorResponseBuilder.ts";
 import { fetchCnpjData } from "../_shared/outbound/httpclient/cnpjService.ts";
 import { getSupabaseClient } from "../_shared/helper/supabaseClient.ts";
@@ -15,7 +15,7 @@ export interface RegisterCompanyBody {
 }
 
 if (!EnvHelper.isLocal()) {
-    serve((req, ctx) => execute()(req, ctx));
+    Deno.serve(execute());
 }
 
 export function execute() {

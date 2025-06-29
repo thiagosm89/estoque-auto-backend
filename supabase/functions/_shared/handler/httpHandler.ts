@@ -1,8 +1,8 @@
 import ErrorResponseBuilder from "../validation/ErrorResponseBuilder.ts";
-import { getSupabaseClient } from "../../_shared/helper/supabaseClient.ts";
+import { getUserFromRequest } from "../../_shared/helper/authHelper.ts";
 
-function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: boolean = false) {
-    return async (req: Request, ctx): Promise<Response> => {
+function handler(execute: (req: Request) => Promise<Response>, withAuth: boolean = false) {
+    return async (req: Request): Promise<Response> => {
         const allowedOrigin = req.headers.get('origin') || '*';
 
         if (req.method === 'OPTIONS') {
@@ -18,20 +18,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
         }
 
         if (withAuth) {
-            const supabase = getSupabaseClient();
-            const { headers } = req;
-            const authHeader = headers.get("authorization");
-
-            if (!authHeader) {
-                return new ErrorResponseBuilder()
-                    .add(null, "Token not found.", "TOKEN_NOT_FOUND")
-                    .buildResponse(401);
-            }
-
-            const token = authHeader.split(' ')[1];
-
-            const { data: user, error } = await supabase.auth.getUser(token);
-            console.log(user);
+            const { user, error } = await getUserFromRequest(req);
 
             if (error) {
                 return new ErrorResponseBuilder()
@@ -41,7 +28,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
         }
 
         if (req.method === 'POST') {
-            const res = await execute(req, ctx);
+            const res = await execute(req);
             const headers = new Headers(res.headers);
             headers.set('Access-Control-Allow-Origin', allowedOrigin);
             return new Response(res.body, {
@@ -54,10 +41,10 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
     };
 }
 
-export function handlerRequest(execute: (req: Request, ctx) => Promise<Response>) {
+export function handlerRequest(execute: (req: Request) => Promise<Response>) {
     return handler(execute);
 }
 
-export function handlerRequestAuth(execute: (req: Request, ctx) => Promise<Response>) {
+export function handlerRequestAuth(execute: (req: Request) => Promise<Response>) {
     return handler(execute, true);
 }
