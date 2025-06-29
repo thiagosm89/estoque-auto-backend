@@ -30,7 +30,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
 
             const token = authHeader.split(' ')[1];
 
-            const { data: user, error } = await supabase.auth.api.getUser(token);
+            const { data: user, error } = await supabase.auth.getUser(token);
             console.log(user);
 
             if (error) {
