@@ -1,0 +1,2 @@
+[functions.register-company]
+verify_jwt = false
