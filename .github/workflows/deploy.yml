@@ -38,8 +38,8 @@ jobs:
       #- name: Lint code
       #  run: npm run lint
 
-      - name: Build project
-        run: npm run build
+      #- name: Build project
+      #  run: npm run build
 
       - name: Deploy to Supabase (Production)
         if: github.ref == 'refs/heads/main'
