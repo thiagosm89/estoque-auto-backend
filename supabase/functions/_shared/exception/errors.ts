@@ -17,7 +17,7 @@ export const ResponseErrorConst = {
     AuthCreateError: { code: "AUTH_CREATE_ERROR", description: "Erro ao criar usuário." },
     CompanyCreateError: { code: "COMPANY_CREATE_ERROR", description: "Erro ao criar empresa." },
     CompanyAlreadyExists: { code: "COMPANY_ALREADY_EXISTS", description: "Empresa já está cadastrada." },
-    UnexpectedError: { code: "UNEXPECTED_ERROR", description: "Erro inesperado: " },
+    UnexpectedError: { code: "UNEXPECTED_ERROR", description: "Erro inesperado." },
 };
 
 export class SingleFormError extends Error {
@@ -26,7 +26,7 @@ export class SingleFormError extends Error {
     status: number
 
     constructor(field: string, error: ResponseErrorType, cause: any = null, status: number = 400) {
-        super(cause.message);
+        super(cause?.message);
 
         this.field = field;
         this.error = error;
@@ -41,7 +41,7 @@ export class ReceitaCommunicationError extends Error {
     status: number
 
     constructor(error: ResponseErrorType, cause: any = null, status: number = 500) {
-        super(cause.message);
+        super(cause?.message);
 
         this.error = error;
         this.cause = cause;
@@ -55,7 +55,7 @@ export class UnexpectedError extends Error {
     status: number
 
     constructor(cause: any = null, status: number = 500) {
-        super(cause.message);
+        super(cause?.message);
 
         this.error = ResponseErrorConst.UnexpectedError;
         this.cause = cause;

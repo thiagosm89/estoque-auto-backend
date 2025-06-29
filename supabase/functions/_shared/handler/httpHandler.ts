@@ -4,12 +4,12 @@ import {
   SingleFormError,
   ReceitaCommunicationError,
   CompanyAlreadyExistsError,
-  UnexpectedError,
+  UnexpectedError, ResponseErrorConst,
 } from '../exception/errors.ts';
 
 function handler(
   execute: (req: Request) => Promise<Response>,
-  withAuth: boolean = false,
+  withAuth: boolean = false
 ) {
   return async (req: Request): Promise<Response> => {
     const allowedOrigin = req.headers.get('origin') || '*';
@@ -55,8 +55,8 @@ function handler(
 
         const customHeaders = {
           'Access-Control-Allow-Origin': allowedOrigin,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        };
 
         if (err instanceof ReceitaCommunicationError) {
           return new ErrorResponseBuilder()
@@ -75,6 +75,10 @@ function handler(
             .add(null, err.error)
             .buildResponse(err.status, customHeaders);
         }
+
+        return new ErrorResponseBuilder()
+          .add(null, ResponseErrorConst.UnexpectedError)
+          .buildResponse(500, customHeaders);
       }
     }
 
@@ -87,7 +91,7 @@ export function handlerRequest(execute: (req: Request) => Promise<Response>) {
 }
 
 export function handlerRequestAuth(
-  execute: (req: Request) => Promise<Response>,
+  execute: (req: Request) => Promise<Response>
 ) {
   return handler(execute, true);
 }

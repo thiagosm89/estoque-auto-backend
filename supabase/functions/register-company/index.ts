@@ -182,17 +182,22 @@ async function validatePost(body: RegisterCompanyBody, supabase) {
       FormFields.FantasyName,
       ResponseErrorConst.FantasyNameRequired
     );
+
   if (!body.corporateName)
     errorBuilder.add(
       FormFields.CorporateName,
       ResponseErrorConst.CorporateNameRequired
     );
+
   if (!body.cnpj)
     errorBuilder.add(FormFields.Cnpj, ResponseErrorConst.CnpjRequired);
+
   if (!body.email)
     errorBuilder.add(FormFields.Email, ResponseErrorConst.EmailRequired);
+
   if (!body.password)
     errorBuilder.add(FormFields.Password, ResponseErrorConst.PasswordRequired);
+
   if (errorBuilder.hasErrors()) return errorBuilder;
 
   await validateCompany(body);

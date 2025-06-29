@@ -1,4 +1,4 @@
-import { serve } from "std/http/server.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { execute as executeRegisterCompany } from "../supabase/functions/register-company/index.ts";
 import { execute as executeOnboarding } from "../supabase/functions/onboarding-company/index.ts";
 import { execute as executeGetCurrentTerm } from "../supabase/functions/get-current-term/index.ts";
