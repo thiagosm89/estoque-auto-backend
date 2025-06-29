@@ -120,6 +120,8 @@ async function validateRegisterCompany(
     // 2. Verificar se o e-mail já existe
     const { data: userExists, error: userExistsError } = await supabase.auth.admin.listUsers({ email: body.email });
     if (userExistsError) {
+        console.error(userExistsError);
+
         return errorBuilder
             .add(null, ErrorMap.EmailCheckError.description, ErrorMap.EmailCheckError.code);
     }
