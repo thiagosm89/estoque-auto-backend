@@ -10,7 +10,7 @@
 #    "password": "senhaSegura123"
 #  }'
 POST http://localhost:8787/functions/v1/register-company
-apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhaGhmZ3hycXJiZWtzaGhiYW9jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1NTQ2NjcsImV4cCI6MjA2NjEzMDY2N30.twhWq7AeVcI0n9a_vOMNjlHFSGEAUfbi9W0YGU7hx5E
+# apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhaGhmZ3hycXJiZWtzaGhiYW9jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1NTQ2NjcsImV4cCI6MjA2NjEzMDY2N30.twhWq7AeVcI0n9a_vOMNjlHFSGEAUfbi9W0YGU7hx5E
 Content-Type: application/json
 
 {

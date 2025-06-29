@@ -24,11 +24,11 @@ CREATE TABLE public.companies (
 -- Create user_profiles table to extend auth.users
 CREATE TABLE public.user_profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    company_id UUID NOT NULL REFERENCES public.companies(id) ON DELETE CASCADE,
+    company_id UUID NULL REFERENCES public.companies(id) ON DELETE CASCADE,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     role public.user_role DEFAULT 'company',
-    email VARCHAR(255),
+    email UNIQUE VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
