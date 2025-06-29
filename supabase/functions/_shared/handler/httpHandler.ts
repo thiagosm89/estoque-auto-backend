@@ -31,6 +31,7 @@ function handler(execute: (req: Request) => Promise<Response>, withAuth: boolean
             const res = await execute(req);
             const headers = new Headers(res.headers);
             headers.set('Access-Control-Allow-Origin', allowedOrigin);
+            headers.set('Content-Type', 'application/json');
             return new Response(res.body, {
                 status: res.status,
                 statusText: res.statusText,

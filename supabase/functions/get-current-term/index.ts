@@ -24,7 +24,9 @@ export function execute() {
                     .add(null, "Termo vigente não encontrado.", "TERM_NOT_FOUND")
                     .buildResponse(404);
             }
-            return new Response(JSON.stringify(term), { status: 200 });
+            return new Response(
+                JSON.stringify(term), { status: 200 }
+            );
         } catch (err) {
             return new ErrorResponseBuilder()
                 .add(null, "Erro inesperado: " + err, "UNEXPECTED_ERROR")
