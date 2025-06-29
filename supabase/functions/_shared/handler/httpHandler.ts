@@ -1,7 +1,7 @@
 import ErrorResponseBuilder from "../validation/ErrorResponseBuilder.ts";
 import { getSupabaseClient } from "../../_shared/helper/supabaseClient.ts";
 
-function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: boolean = false) {
+async function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: boolean = false) {
     return async (req: Request, ctx): Promise<Response> => {
         const allowedOrigin = req.headers.get('origin') || '*';
 
@@ -24,7 +24,7 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
 
             if (!authHeader) {
                 return new ErrorResponseBuilder()
-                    .add(null, "Usuário não autenticado.", "NOT_AUTHENTICATED")
+                    .add(null, "Token not found.", "TOKEN_NOT_FOUND")
                     .buildResponse(401);
             }
 
@@ -54,10 +54,10 @@ function handler(execute: (req: Request, ctx) => Promise<Response>, withAuth: bo
     };
 }
 
-export function handlerRequest(execute: (req: Request, ctx) => Promise<Response>) {
+export async function handlerRequest(execute: (req: Request, ctx) => Promise<Response>) {
     return handler(execute);
 }
 
-export function handlerRequestAuth(execute: (req: Request, ctx) => Promise<Response>) {
+export async function handlerRequestAuth(execute: (req: Request, ctx) => Promise<Response>) {
     return handler(execute, true);
 }

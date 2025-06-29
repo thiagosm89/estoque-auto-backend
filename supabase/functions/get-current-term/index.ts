@@ -1,14 +1,14 @@
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { getSupabaseClient } from "../_shared/helper/supabaseClient.ts";
 import { EnvHelper } from "../_shared/helper/envHelper.ts";
 import { handlerRequestAuth } from "../_shared/handler/httpHandler.ts";
 import ErrorResponseBuilder from "../_shared/validation/ErrorResponseBuilder.ts";
 
 if (!EnvHelper.isLocal()) {
-    serve(execute());
+    Deno.serve(execute());
 }
 
-export function execute() {
+export async function execute() {
     return handlerRequestAuth(async (_req, _ctx) => {
         const supabase = getSupabaseClient();
         try {
