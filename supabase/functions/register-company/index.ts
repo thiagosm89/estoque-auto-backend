@@ -118,14 +118,19 @@ async function validateRegisterCompany(
     }
 
     // 2. Verificar se o e-mail já existe
-    const { data: userExists, error: userExistsError } = await supabase.auth.admin.listUsers({ email: body.email });
-    if (userExistsError) {
-        console.error(userExistsError);
+    const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .limit(1)
+        .eq('email', body.email);
+    if (error) {
+        console.error(error);
 
         return errorBuilder
-            .add(null, ErrorMap.EmailCheckError.description, ErrorMap.EmailCheckError.code);
+            .add(FormFields.Email, ErrorMap.EmailCheckError.description, ErrorMap.EmailCheckError.code);
     }
-    if (userExists && userExists.users && userExists.users.length > 0) {
+    if (data && data.length > 0) {
+        console
         return errorBuilder
             .add(FormFields.Email, ErrorMap.EmailAlreadyRegistered.description, ErrorMap.EmailAlreadyRegistered.code);
     }

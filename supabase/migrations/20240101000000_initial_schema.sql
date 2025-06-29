@@ -28,6 +28,7 @@ CREATE TABLE public.user_profiles (
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     role public.user_role DEFAULT 'company',
+    email VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -93,13 +94,14 @@ BEGIN
 
         user_first_name := COALESCE(NEW.raw_user_meta_data->>'first_name', 'Admin');
         user_last_name := COALESCE(NEW.raw_user_meta_data->>'last_name', 'Principal');
-        INSERT INTO public.user_profiles (id, company_id, first_name, last_name, role)
+        INSERT INTO public.user_profiles (id, company_id, first_name, last_name, role, email)
         VALUES (
             NEW.id,
             new_company_id,
             user_first_name,
             user_last_name,
-            'company'
+            'company',
+            NEW.email
         );
     END IF;
     RETURN NEW;
