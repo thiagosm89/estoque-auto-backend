@@ -13,7 +13,7 @@ import {
   SingleFormError,
   UnexpectedError,
 } from '../_shared/exception/errors.ts';
-import { STATUS_CODE as StatusCode } from 'std/http/status.ts';
+import { STATUS_CODE as StatusCode } from 'https://deno.land/std@0.224.0/http/status.ts';
 
 if (!EnvHelper.isLocal()) {
   Deno.serve(execute());
