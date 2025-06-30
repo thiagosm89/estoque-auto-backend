@@ -19,6 +19,20 @@ export const ResponseErrorConst = {
     CompanyAlreadyExists: { code: "COMPANY_ALREADY_EXISTS", description: "Empresa já está cadastrada." },
     UnexpectedError: { code: "UNEXPECTED_ERROR", description: "Erro inesperado." },
     OnboardingSaveError: { code: "ONBOARDING_SAVE_ERROR", description: "Erro ao tentar salvar dados do onboarding." },
+    CepRequired: { code: "CEP_REQUIRED", description: "CEP é obrigatório." },
+    AddressRequired: { code: "ADDRESS_REQUIRED", description: "Endereço é obrigatório." },
+    NumberRequired: { code: "NUMBER_REQUIRED", description: "Número é obrigatório." },
+    CityRequired: { code: "CITY_REQUIRED", description: "Cidade é obrigatória." },
+    StateRequired: { code: "STATE_REQUIRED", description: "Estado é obrigatório." },
+    PlanRequired: { code: "PLAN_REQUIRED", description: "Plano é obrigatório." },
+    CardHolderNameRequired: { code: "CARD_HOLDER_NAME_REQUIRED", description: "Nome do titular do cartão é obrigatório." },
+    CardHolderCpfRequired: { code: "CARD_HOLDER_CPF_REQUIRED", description: "CPF do titular do cartão é obrigatório." },
+    CardNumberRequired: { code: "CARD_NUMBER_REQUIRED", description: "Número do cartão é obrigatório." },
+    CardExpiryRequired: { code: "CARD_EXPIRY_REQUIRED", description: "Validade do cartão é obrigatória." },
+    CardCvvRequired: { code: "CARD_CVV_REQUIRED", description: "CVV do cartão é obrigatório." },
+    SignatureRequired: { code: "SIGNATURE_REQUIRED", description: "Assinatura é obrigatória." },
+    SignatureCpfRequired: { code: "SIGNATURE_CPF_REQUIRED", description: "CPF da assinatura é obrigatório." },
+    TermHashRequired: { code: "TERM_HASH_REQUIRED", description: "Hash do termo é obrigatório." },
 };
 
 export class SingleFormError extends Error {

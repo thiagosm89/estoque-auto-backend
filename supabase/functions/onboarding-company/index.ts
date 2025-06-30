@@ -8,8 +8,6 @@ import { ResponseErrorConst, SingleFormError, UnexpectedError } from '../_shared
 
 // Interface para o body do onboarding
 export interface OnboardingBody {
-    legalRepresentativeName: string;
-    legalRepresentativeCpf: string;
     cep: string;
     address: string;
     number: string;
@@ -40,22 +38,20 @@ export function execute() {
 
             // Validação básica dos campos obrigatórios
             const errorBuilder = new ErrorResponseBuilder();
-            if (!body.legalRepresentativeName) errorBuilder.add("legalRepresentativeName", "Nome do representante é obrigatório.", "LEGAL_REPRESENTATIVE_NAME_REQUIRED");
-            if (!body.legalRepresentativeCpf) errorBuilder.add("legalRepresentativeCpf", "CPF do representante é obrigatório.", "LEGAL_REPRESENTATIVE_CPF_REQUIRED");
-            if (!body.cep) errorBuilder.add("cep", "CEP é obrigatório.", "CEP_REQUIRED");
-            if (!body.address) errorBuilder.add("address", "Endereço é obrigatório.", "ADDRESS_REQUIRED");
-            if (!body.number) errorBuilder.add("number", "Número é obrigatório.", "NUMBER_REQUIRED");
-            if (!body.city) errorBuilder.add("city", "Cidade é obrigatória.", "CITY_REQUIRED");
-            if (!body.state) errorBuilder.add("state", "Estado é obrigatório.", "STATE_REQUIRED");
-            if (!body.plan) errorBuilder.add("plan", "Plano é obrigatório.", "PLAN_REQUIRED");
-            if (!body.cardHolderName) errorBuilder.add("cardHolderName", "Nome do titular do cartão é obrigatório.", "CARD_HOLDER_NAME_REQUIRED");
-            if (!body.cardHolderCpf) errorBuilder.add("cardHolderCpf", "CPF do titular do cartão é obrigatório.", "CARD_HOLDER_CPF_REQUIRED");
-            if (!body.cardNumber) errorBuilder.add("cardNumber", "Número do cartão é obrigatório.", "CARD_NUMBER_REQUIRED");
-            if (!body.cardExpiry) errorBuilder.add("cardExpiry", "Validade do cartão é obrigatória.", "CARD_EXPIRY_REQUIRED");
-            if (!body.cardCvv) errorBuilder.add("cardCvv", "CVV do cartão é obrigatório.", "CARD_CVV_REQUIRED");
-            if (!body.signature) errorBuilder.add("signature", "Assinatura é obrigatória.", "SIGNATURE_REQUIRED");
-            if (!body.signatureCpf) errorBuilder.add("signatureCpf", "CPF da assinatura é obrigatório.", "SIGNATURE_CPF_REQUIRED");
-            if (!body.termHash) errorBuilder.add("termHash", "Hash do termo é obrigatório.", "TERM_HASH_REQUIRED");
+            if (!body.cep) errorBuilder.add("cep", ResponseErrorConst.CepRequired);
+            if (!body.address) errorBuilder.add("address", ResponseErrorConst.AddressRequired);
+            if (!body.number) errorBuilder.add("number", ResponseErrorConst.NumberRequired);
+            if (!body.city) errorBuilder.add("city", ResponseErrorConst.CityRequired);
+            if (!body.state) errorBuilder.add("state", ResponseErrorConst.StateRequired);
+            if (!body.plan) errorBuilder.add("plan", ResponseErrorConst.PlanRequired);
+            if (!body.cardHolderName) errorBuilder.add("cardHolderName", ResponseErrorConst.CardHolderNameRequired);
+            if (!body.cardHolderCpf) errorBuilder.add("cardHolderCpf", ResponseErrorConst.CardHolderCpfRequired);
+            if (!body.cardNumber) errorBuilder.add("cardNumber", ResponseErrorConst.CardNumberRequired);
+            if (!body.cardExpiry) errorBuilder.add("cardExpiry", ResponseErrorConst.CardExpiryRequired);
+            if (!body.cardCvv) errorBuilder.add("cardCvv", ResponseErrorConst.CardCvvRequired);
+            if (!body.signature) errorBuilder.add("signature", ResponseErrorConst.SignatureRequired);
+            if (!body.signatureCpf) errorBuilder.add("signatureCpf", ResponseErrorConst.SignatureCpfRequired);
+            if (!body.termHash) errorBuilder.add("termHash", ResponseErrorConst.TermHashRequired);
             if (errorBuilder.hasErrors()) return errorBuilder.buildResponse(400);
 
             // Validar hash do termo vigente
@@ -80,8 +76,8 @@ export function execute() {
             // Chamar a função transacional via RPC
             const payload = {
                 owner_id: user.id,
-                legalRepresentativeName: body.legalRepresentativeName,
-                legalRepresentativeCpf: body.legalRepresentativeCpf,
+                legalRepresentativeName: body.signature,
+                legalRepresentativeCpf: body.signatureCpf,
                 cep: body.cep,
                 address: body.address,
                 number: body.number,
