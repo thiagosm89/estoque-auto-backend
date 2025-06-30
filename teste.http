@@ -23,3 +23,42 @@ Content-Type: application/json
 
 ###
 
+POST http://localhost:8787/functions/v1/get-current-term
+# apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhaGhmZ3hycXJiZWtzaGhiYW9jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1NTQ2NjcsImV4cCI6MjA2NjEzMDY2N30.twhWq7AeVcI0n9a_vOMNjlHFSGEAUfbi9W0YGU7hx5E
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Ing2VE5IbTQyN0NhRWJZV08iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3RhaGhmZ3hycXJiZWtzaGhiYW9jLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI2OTdlZTNjYy0xNWExLTRlNjItYTQyMC1kMWRlZjQ0ZmEwNzAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUxMjQ1OTQ4LCJpYXQiOjE3NTEyNDIzNDgsImVtYWlsIjoidGhpYWdvcGVyZWlyYW1lbGxvQGdtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiY25waiI6IjQ4MjU5MDUxMDAwMTY5IiwiY29ycG9yYXRlX25hbWUiOiJ0aGlhZ28gcGVyZWlyYSBtZWxsbyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmYW50YXN5X25hbWUiOiJ0c2pwYSB0ZWNub2xvZ2lhIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NTEyNDIzNDh9XSwic2Vzc2lvbl9pZCI6ImIxYmJhMmFhLWZmY2UtNDRhYy05NDEzLWQwYWQ1NTEwNjNkYiIsImlzX2Fub255bW91cyI6ZmFsc2V9.ZlVJaoyHAKhYo3OacUCpBVQJGbXSuSSIjEFCZqSIMhU
+
+{
+}
+
+###
+
+POST http://localhost:8787/functions/v1/onboarding-company
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6Ing2VE5IbTQyN0NhRWJZV08iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3RhaGhmZ3hycXJiZWtzaGhiYW9jLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI2OTdlZTNjYy0xNWExLTRlNjItYTQyMC1kMWRlZjQ0ZmEwNzAiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUxMjQ5NzIxLCJpYXQiOjE3NTEyNDYxMjEsImVtYWlsIjoidGhpYWdvcGVyZWlyYW1lbGxvQGdtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiY25waiI6IjQ4MjU5MDUxMDAwMTY5IiwiY29ycG9yYXRlX25hbWUiOiJ0aGlhZ28gcGVyZWlyYSBtZWxsbyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmYW50YXN5X25hbWUiOiJ0c2pwYSB0ZWNub2xvZ2lhIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NTEyNDIzNDh9XSwic2Vzc2lvbl9pZCI6ImIxYmJhMmFhLWZmY2UtNDRhYy05NDEzLWQwYWQ1NTEwNjNkYiIsImlzX2Fub255bW91cyI6ZmFsc2V9.J6C6VgRuvG9GGcYYTNs2lFVPoH-O6zvspVFzG0xftOU
+Content-Type: application/json
+
+{
+  "legalRepresentativeName": "Thiago Pereira Mello",
+  "legalRepresentativeCpf": "019.944.450-17",
+  "cep": "97010-000",
+  "address": "Rua Venâncio Aires",
+  "number": "158",
+  "complement": "apto 106",
+  "city": "Santa Maria",
+  "state": "RS",
+  "plan": "semestral",
+  "cardHolderName": "Thiago P Mello",
+  "cardHolderCpf": "019.944.450-17",
+  "cardNumber": "6546 5454 5646 5465",
+  "cardExpiry": "01/25",
+  "cardCvv": "254",
+  "signature": "Thiago Pereira Mello",
+  "signatureCpf": "019.944.450-17",
+  "termHash": "2055368b4322279fccc7626959643691"
+}
+
+###
+
+
+
+

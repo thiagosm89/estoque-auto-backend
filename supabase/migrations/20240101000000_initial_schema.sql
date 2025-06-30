@@ -187,38 +187,22 @@ EXECUTE FUNCTION prevent_company_terms_hash_update();
 
 -- Função transacional para onboarding (ajustada para receber a hash do termo)
 CREATE OR REPLACE FUNCTION public.onboarding_company_transaction(
-    p_owner_id UUID,
-    p_legal_representative_name TEXT,
-    p_legal_representative_cpf TEXT,
-    p_cep TEXT,
-    p_address TEXT,
-    p_number TEXT,
-    p_complement TEXT,
-    p_city TEXT,
-    p_state TEXT,
-    p_plan_type TEXT,
-    p_card_holder_name TEXT,
-    p_card_holder_cpf TEXT,
-    p_card_last_digits TEXT,
-    p_signature_name TEXT,
-    p_signature_cpf TEXT,
-    p_term_hash TEXT
-)
-RETURNS VOID AS $$
+    payload jsonb
+) RETURNS void AS $$
 DECLARE
     v_company_id UUID;
     v_payment_id UUID;
 BEGIN
-    -- Buscar empresa
-    SELECT id INTO v_company_id FROM companies WHERE owner_id = p_owner_id;
+    -- Buscar empresa pelo owner_id
+    SELECT id INTO v_company_id FROM companies WHERE owner_id = (payload->>'owner_id')::uuid;
     IF v_company_id IS NULL THEN
         RAISE EXCEPTION 'Empresa não encontrada para o owner_id informado.';
     END IF;
 
-    -- Atualizar apenas dados do representante e onboarding
+    -- Atualizar dados do representante e onboarding
     UPDATE companies SET
-        legal_representative_name = p_legal_representative_name,
-        legal_representative_cpf = p_legal_representative_cpf,
+        legal_representative_name = payload->>'legalRepresentativeName',
+        legal_representative_cpf = payload->>'legalRepresentativeCpf',
         onboarding_completed = TRUE,
         onboarding_completed_at = NOW()
     WHERE id = v_company_id;
@@ -227,7 +211,13 @@ BEGIN
     INSERT INTO company_addresses (
         company_id, address, number, complement, city, state, cep
     ) VALUES (
-        v_company_id, p_address, p_number, p_complement, p_city, p_state, p_cep
+        v_company_id,
+        payload->>'address',
+        payload->>'number',
+        payload->>'complement',
+        payload->>'city',
+        payload->>'state',
+        payload->>'cep'
     );
 
     -- Criar pagamento
@@ -235,15 +225,24 @@ BEGIN
         company_id, plan_type, plan_start_date, plan_status,
         card_holder_name, card_holder_cpf, card_last_digits
     ) VALUES (
-        v_company_id, p_plan_type, NOW(), 'trial',
-        p_card_holder_name, p_card_holder_cpf, p_card_last_digits
+        v_company_id,
+        payload->>'plan',
+        NOW(),
+        'trial',
+        payload->>'cardHolderName',
+        payload->>'cardHolderCpf',
+        RIGHT(REGEXP_REPLACE(payload->>'cardNumber', '\\D', '', 'g'), 4)
     ) RETURNING id INTO v_payment_id;
 
     -- Criar aceite do termo usando a hash recebida
     INSERT INTO company_terms_acceptance (
         company_id, payment_id, term_hash, signature_name, signature_cpf
     ) VALUES (
-        v_company_id, v_payment_id, p_term_hash, p_signature_name, p_signature_cpf
+        v_company_id,
+        v_payment_id,
+        payload->>'termHash',
+        payload->>'signature',
+        payload->>'signatureCpf'
     );
 END;
-$$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql SECURITY DEFINER; 
