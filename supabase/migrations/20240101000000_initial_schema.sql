@@ -17,6 +17,7 @@ CREATE TABLE public.companies (
     contact_phone VARCHAR(20),
     legal_representative_email VARCHAR(255),
     onboarding_completed BOOLEAN DEFAULT FALSE,
+    onboarding_completed_at TIMESTAMP WITH TIME ZONE,
     legal_representative_name VARCHAR(255),
     legal_representative_cpf VARCHAR(14)
 );
