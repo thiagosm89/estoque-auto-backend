@@ -214,7 +214,7 @@ BEGIN
     ) VALUES (
         v_company_id,
         payload->>'address',
-        payload->>'number',
+        (payload->>'number')::integer,
         payload->>'complement',
         payload->>'city',
         payload->>'state',
