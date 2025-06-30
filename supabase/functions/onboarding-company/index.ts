@@ -4,6 +4,7 @@ import { getSupabaseClient } from "../_shared/helper/supabaseClient.ts";
 import { EnvHelper } from "../_shared/helper/envHelper.ts";
 import { handlerRequest, handlerRequestAuth } from "../_shared/handler/httpHandler.ts";
 import { getUserFromRequest } from "../_shared/helper/authHelper.ts";
+import { ResponseErrorConst, SingleFormError, UnexpectedError } from '../_shared/exception/errors.ts';
 
 // Interface para o body do onboarding
 export interface OnboardingBody {
@@ -77,28 +78,29 @@ export function execute() {
             }
 
             // Chamar a função transacional via RPC
-            const { error } = await supabase.rpc('onboarding_company_transaction', {
-                p_owner_id: user.id,
-                p_legal_representative_name: body.legalRepresentativeName,
-                p_legal_representative_cpf: body.legalRepresentativeCpf,
-                p_cep: body.cep,
-                p_address: body.address,
-                p_number: body.number,
-                p_complement: body.complement || null,
-                p_city: body.city,
-                p_state: body.state,
-                p_plan_type: body.plan,
-                p_card_holder_name: body.cardHolderName,
-                p_card_holder_cpf: body.cardHolderCpf,
-                p_card_last_digits: body.cardNumber.slice(-4),
-                p_signature_name: body.signature,
-                p_signature_cpf: body.signatureCpf,
-                p_term_hash: body.termHash
-            });
+            const payload = {
+                owner_id: user.id,
+                legalRepresentativeName: body.legalRepresentativeName,
+                legalRepresentativeCpf: body.legalRepresentativeCpf,
+                cep: body.cep,
+                address: body.address,
+                number: body.number,
+                complement: body.complement || null,
+                city: body.city,
+                state: body.state,
+                plan: body.plan,
+                cardHolderName: body.cardHolderName,
+                cardHolderCpf: body.cardHolderCpf,
+                cardNumber: body.cardNumber,
+                cardExpiry: body.cardExpiry,
+                cardCvv: body.cardCvv,
+                signature: body.signature,
+                signatureCpf: body.signatureCpf,
+                termHash: body.termHash
+            };
+            const { error } = await supabase.rpc('onboarding_company_transaction', { payload });
             if (error) {
-                return new ErrorResponseBuilder()
-                    .add(null, "Erro ao executar onboarding transacional: " + error.message, "ONBOARDING_TRANSACTION_ERROR")
-                    .buildResponse(500);
+                throw new SingleFormError(null, ResponseErrorConst.OnboardingSaveError, error, 500);
             }
 
             return new Response(JSON.stringify({ success: true }), { status: 200 });

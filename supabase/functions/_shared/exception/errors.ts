@@ -18,6 +18,7 @@ export const ResponseErrorConst = {
     CompanyCreateError: { code: "COMPANY_CREATE_ERROR", description: "Erro ao criar empresa." },
     CompanyAlreadyExists: { code: "COMPANY_ALREADY_EXISTS", description: "Empresa já está cadastrada." },
     UnexpectedError: { code: "UNEXPECTED_ERROR", description: "Erro inesperado." },
+    OnboardingSaveError: { code: "ONBOARDING_SAVE_ERROR", description: "Erro ao tentar salvar dados do onboarding." },
 };
 
 export class SingleFormError extends Error {
