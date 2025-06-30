@@ -1,10 +1,10 @@
 import ErrorResponseBuilder from '../validation/ErrorResponseBuilder.ts';
 import { getUserFromRequest } from '../../_shared/helper/authHelper.ts';
 import {
-  SingleFormError,
   ReceitaCommunicationError,
-  CompanyAlreadyExistsError,
-  UnexpectedError, ResponseErrorConst,
+  ResponseErrorConst,
+  SingleFormError,
+  UnexpectedError,
 } from '../exception/errors.ts';
 
 function handler(
